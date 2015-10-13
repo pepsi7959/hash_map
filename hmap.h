@@ -1,23 +1,23 @@
 #ifndef _HMAP_H
  #define _HMAP_H
- 
+
 #define MAP_BUCKET          1024
 #define MAX_SIZE_KEY        1024
 
 enum hmap_error_enum{
-	HMAP_SUCCESS = 0,
-	HMAP_FAILED = -1,
+    HMAP_SUCCESS = 0,
+    HMAP_FAILED = -1,
     HMAP_ALLOCATED_ERROR = -100,
-	HMAP_CREATE_DB_ERROR = -101,
-	HMAP_CREATE_TUPUL_ERROR = -102,
-	HMAP_DB_EMPTY = -401,
-	HMAP_TUPUL_EMPTY = -403,
-	HMAP_KEY_EMPTY = -404,
-	HMAP_TUPLE_NOT_FOUND = -405,
-	HMAP_TUPLE_DUPLICATE = -406,
-	HMAP_TUPLE_ALREADY_EXIST = -407,
+    HMAP_CREATE_DB_ERROR = -101,
+    HMAP_CREATE_TUPUL_ERROR = -102,
+    HMAP_DB_EMPTY = -401,
+    HMAP_TUPUL_EMPTY = -403,
+    HMAP_KEY_EMPTY = -404,
+    HMAP_TUPLE_NOT_FOUND = -405,
+    HMAP_TUPLE_DUPLICATE = -406,
+    HMAP_TUPLE_ALREADY_EXIST = -407,
 
-	HMAP_ALL
+    HMAP_ALL
 };
 
 enum hmap_tuple_type{
@@ -26,25 +26,25 @@ enum hmap_tuple_type{
 };
 
 typedef struct tuple{
-	struct tuple *list_next;
-	struct tuple *list_prev;
+    struct tuple *list_next;
+    struct tuple *list_prev;
     struct tuple *hash_next;
     struct tuple *hash_prev;
-    
+
     int key_len;
     int data_len;
     int index;
-    
-	char key[MAX_SIZE_KEY];
-	void *data;
-    
+
+    char key[MAX_SIZE_KEY];
+    void *data;
+
     int type;
 }TUPLE;
 
 typedef struct hmap_db{
     int tuple_count;
     int secondary_tuple_count;
-	int bucket_size;
+    int bucket_size;
     TUPLE *tuple;
     TUPLE *list_tuple;
 }HMAP_DB;
