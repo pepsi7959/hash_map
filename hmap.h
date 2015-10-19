@@ -56,5 +56,7 @@ int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len);
 int hmap_set(HMAP_DB *hmap_db, void *key, int k_len, void *data, int d_len, int alway_set);
 int hmap_print_table(HMAP_DB *hmap_db);
 int hmap_print_list(HMAP_DB *hmap_db);
+int hmap_print_tree( HMAP_DB *my_hmap_db );
 int hmap_destroy(HMAP_DB **hmap_db);
+
 #endif

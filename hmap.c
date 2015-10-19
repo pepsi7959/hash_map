@@ -361,6 +361,27 @@ static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ){
     }
 }
 
+static void hmap_print_tree_tuple( HMAP_DB *my_hmap_db ){
+    int i = 0;
+    TUPLE *root_tuple, *ptr_tuple;
+    for( ; i < my_hmap_db->bucket_size ; i++){
+        ptr_tuple = root_tuple = (my_hmap_db->tuple+i);
+        if( root_tuple == NULL  ){
+            continue;
+        }
+        printf("index[%d]\n", ptr_tuple->index);
+        while( ptr_tuple ){
+            if ( ptr_tuple->key_len > 0){
+                printf("\t[%p] key[%s], data[%s]\n", ptr_tuple,  ptr_tuple->key, (char *)ptr_tuple->data);
+            }
+            if( ptr_tuple->hash_next == root_tuple ){
+                break;
+            }
+            ptr_tuple = ptr_tuple->hash_next;
+        }
+    }
+}
+
 int hmap_print_table( HMAP_DB *my_hmap_db ){
     if( my_hmap_db == NULL ) 
         return HMAP_DB_EMPTY;
@@ -372,6 +393,13 @@ int hmap_print_list( HMAP_DB *my_hmap_db ){
     if( my_hmap_db == NULL ) 
         return HMAP_DB_EMPTY;
     hmap_print_list_tuple(my_hmap_db);
+    return HMAP_SUCCESS;
+}
+
+int hmap_print_tree( HMAP_DB *my_hmap_db ){
+    if( my_hmap_db == NULL ) 
+        return HMAP_DB_EMPTY;
+    hmap_print_tree_tuple(my_hmap_db);
     return HMAP_SUCCESS;
 }
 
