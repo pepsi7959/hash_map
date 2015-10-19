@@ -1,6 +1,6 @@
 #ifndef _HMAP_H
  #define _HMAP_H
-
+ 
 #define MAP_BUCKET          1024
 #define MAX_SIZE_KEY        1024
 
@@ -30,14 +30,14 @@ typedef struct tuple{
     struct tuple *list_prev;
     struct tuple *hash_next;
     struct tuple *hash_prev;
-
+    
     int key_len;
     int data_len;
     int index;
-
+    
     char key[MAX_SIZE_KEY];
     void *data;
-
+    
     int type;
 }TUPLE;
 
@@ -54,5 +54,7 @@ int hmap_is_locate(HMAP_DB *hmap_db, void *key, int k_len);
 int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, void *data, int d_len, int dup_flag);
 int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len);
 int hmap_set(HMAP_DB *hmap_db, void *key, int k_len, void *data, int d_len, int alway_set);
+int hmap_print_table(HMAP_DB *hmap_db);
+int hmap_print_list(HMAP_DB *hmap_db);
 int hmap_destroy(HMAP_DB **hmap_db);
 #endif

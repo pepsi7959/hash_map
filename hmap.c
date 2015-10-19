@@ -361,6 +361,20 @@ static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ){
     }
 }
 
+int hmap_print_table( HMAP_DB *my_hmap_db ){
+    if( my_hmap_db == NULL ) 
+        return HMAP_DB_EMPTY;
+    hmap_print(my_hmap_db);
+    return HMAP_SUCCESS;
+}
+
+int hmap_print_list( HMAP_DB *my_hmap_db ){
+    if( my_hmap_db == NULL ) 
+        return HMAP_DB_EMPTY;
+    hmap_print_list_tuple(my_hmap_db);
+    return HMAP_SUCCESS;
+}
+
 int hmap_test(){
     HMAP_DB *my_hmap_db;
     TUPLE *my_tuple;
@@ -458,6 +472,8 @@ int hmap_test_add100(){
     hmap_destroy(&my_hmap_db);
     return 0;
 }
+
+#ifdef ON_UNIT_TEST
 int main(){
     int ret = 0;
     printf("Test : %s[%d]\n",((ret = hmap_test()) != 0)?"fail":"true", ret);
@@ -468,3 +484,4 @@ int main(){
     
     return 0;
 }
+#endif
