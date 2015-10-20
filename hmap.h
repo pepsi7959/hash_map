@@ -26,8 +26,8 @@ enum hmap_tuple_type{
 };
 
 typedef struct tuple{
-    struct tuple *list_next;
-    struct tuple *list_prev;
+    struct tuple *next;
+    struct tuple *prev;
     struct tuple *hash_next;
     struct tuple *hash_prev;
     
