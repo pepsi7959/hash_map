@@ -18,35 +18,35 @@
 {                                                                     \
    if ((_first) == NULL)                                              \
    {                                                                  \
-      (_first) = (_item)->list_prev = (_item)->list_next = (_item);   \
+      (_first) = (_item)->prev = (_item)->next = (_item);   \
    }                                                                  \
    else                                                               \
    {                                                                  \
-      (_item)->list_prev = (_first)->list_prev;                       \
-      (_item)->list_next = (_first);                                  \
-      (_first)->list_prev->list_next = (_item);                       \
-      (_first)->list_prev = (_item);                                  \
+      (_item)->prev = (_first)->prev;                       \
+      (_item)->next = (_first);                                  \
+      (_first)->prev->next = (_item);                       \
+      (_first)->prev = (_item);                                  \
    }                                                                  \
 }
 #define HDB_LIST_REMOVE(_first,_item)                                 \
 {                                                                     \
    if ((_first) == (_item))                                           \
    {                                                                  \
-      if ((_first)->list_next == (_first))                            \
+      if ((_first)->next == (_first))                            \
          (_first) = NULL;                                             \
       else                                                            \
       {                                                               \
-         (_first) = (_item)->list_next;                               \
-         (_item)->list_next->list_prev = (_item)->list_prev;          \
-         (_item)->list_prev->list_next = (_item)->list_next;          \
+         (_first) = (_item)->next;                               \
+         (_item)->next->prev = (_item)->prev;          \
+         (_item)->prev->next = (_item)->next;          \
       }                                                               \
    }                                                                  \
    else                                                               \
    {                                                                  \
-      (_item)->list_next->list_prev = (_item)->list_prev;             \
-      (_item)->list_prev->list_next = (_item)->list_next;             \
+      (_item)->next->prev = (_item)->prev;             \
+      (_item)->prev->next = (_item)->next;             \
    }                                                                  \
-   (_item)->list_prev = (_item)->list_next = NULL;                    \
+   (_item)->prev = (_item)->next = NULL;                    \
 }
 
 #define HDB_HASH_APPEND(_first,_item)                                 \
@@ -93,10 +93,10 @@
 }                                   
 
 #define IS_NEXT_LIST(_first, _curr){        \
-    if( _curr->list_next == _first ){       \
+    if( _curr->next == _first ){       \
         break;                              \
     }                                       \
-    _curr = _curr->list_next;               \
+    _curr = _curr->next;               \
 }                                   
 
 
@@ -270,7 +270,7 @@ int hmap_add(HMAP_DB **hmap_db, void *key, int k_len, void *data, int d_len, int
             new_tuple->key_len = k_len;
             new_tuple->index = index;
             new_tuple->hash_next = new_tuple->hash_prev = NULL;
-            new_tuple->list_next = new_tuple->list_prev = NULL;
+            new_tuple->next = new_tuple->prev = NULL;
             new_tuple->type = HMAP_TUPLE_SECONDARY;
             (*hmap_db)->secondary_tuple_count++;
             HDB_LIST_APPEND((*hmap_db)->list_tuple, new_tuple);
@@ -354,10 +354,10 @@ static void hmap_print_list_tuple( HMAP_DB *my_hmap_db ){
         
         printf("index[%d][%p] key[%s], data[%s]\n", ptr_list_tuple->index, ptr_list_tuple,  ptr_list_tuple->key, (char *)ptr_list_tuple->data);
 
-        if( ptr_list_tuple->list_next == my_hmap_db->list_tuple){
+        if( ptr_list_tuple->next == my_hmap_db->list_tuple){
             break;
         }
-        ptr_list_tuple = ptr_list_tuple->list_next;
+        ptr_list_tuple = ptr_list_tuple->next;
     }
 }
 
