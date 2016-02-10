@@ -395,19 +395,25 @@ int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len){
 
 int hmap_set(HMAP_DB *hmap_db, void *key, int k_len, void *data, int d_len, int alway_set);
 
-int hmap_destroy(HMAP_DB **hmap_db){
-
+int hmap_truncate(HMAP_DB **hmap_db){
     TUPLE *ptr_list_tuple = (*hmap_db)->list_tuple;
     while( ptr_list_tuple ){
         HDB_LIST_REMOVE((*hmap_db)->list_tuple, ptr_list_tuple);
         if( ptr_list_tuple->data ){
             free(ptr_list_tuple->data);
+            ptr_list_tuple->data = NULL;
+            ptr_list_tuple->key[0] = 0;
         }
         if( ptr_list_tuple->type == HMAP_TUPLE_SECONDARY ){
             free(ptr_list_tuple);
         }
         ptr_list_tuple = (*hmap_db)->list_tuple;
     }
+    return 0;
+}
+
+int hmap_destroy(HMAP_DB **hmap_db){
+    hmap_truncate(hmap_db);
     free((*hmap_db)->tuple);
     free((*hmap_db));
     *hmap_db = NULL;

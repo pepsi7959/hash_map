@@ -60,5 +60,6 @@ int hmap_print_list(HMAP_DB *hmap_db);
 int hmap_print_tree( HMAP_DB *my_hmap_db );
 int hmap_search(HMAP_DB *hmap_db, void *key, int k_len, TUPLE **data);
 int hmap_destroy(HMAP_DB **hmap_db);
+int hmap_truncate(HMAP_DB **hamp_db);
 
 #endif
