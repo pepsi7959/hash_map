@@ -403,6 +403,7 @@ int hmap_truncate(HMAP_DB **hmap_db){
             free(ptr_list_tuple->data);
             ptr_list_tuple->data = NULL;
             ptr_list_tuple->key[0] = 0;
+            ptr_list_tuple->key_len = 0;
         }
         if( ptr_list_tuple->type == HMAP_TUPLE_SECONDARY ){
             free(ptr_list_tuple);
