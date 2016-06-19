@@ -33,21 +33,21 @@
 {                                                                     \
    if ((_first) == (_item))                                           \
    {                                                                  \
-      if ((_first)->next == (_first))                            \
+      if ((_first)->next == (_first))                                 \
          (_first) = NULL;                                             \
       else                                                            \
       {                                                               \
-         (_first) = (_item)->next;                               \
-         (_item)->next->prev = (_item)->prev;          \
-         (_item)->prev->next = (_item)->next;          \
+         (_first) = (_item)->next;                                    \
+         (_item)->next->prev = (_item)->prev;                         \
+         (_item)->prev->next = (_item)->next;                         \
       }                                                               \
    }                                                                  \
    else                                                               \
    {                                                                  \
-      (_item)->next->prev = (_item)->prev;             \
-      (_item)->prev->next = (_item)->next;             \
+      (_item)->next->prev = (_item)->prev;                            \
+      (_item)->prev->next = (_item)->next;                            \
    }                                                                  \
-   (_item)->prev = (_item)->next = NULL;                    \
+   (_item)->prev = (_item)->next = NULL;                              \
 }
 
 #define HDB_HASH_APPEND(_first,_item)                                 \
@@ -91,14 +91,14 @@
         break;                              \
     }                                       \
     _curr = _curr->hash_next;               \
-}                                   
+}
 
 #define IS_NEXT_LIST(_first, _curr){        \
-    if( _curr->next == _first ){       \
+    if( _curr->next == _first ){            \
         break;                              \
     }                                       \
-    _curr = _curr->next;               \
-}                                   
+    _curr = _curr->next;                    \
+}
 
 
 static int
@@ -418,6 +418,7 @@ int hmap_destroy(HMAP_DB **hmap_db){
     free((*hmap_db)->tuple);
     free((*hmap_db));
     *hmap_db = NULL;
+    return 0;
 }
 
 static void hmap_print( HMAP_DB *my_hmap_db ){
@@ -484,114 +485,3 @@ int hmap_print_tree( HMAP_DB *my_hmap_db ){
     hmap_print_tree_tuple(my_hmap_db);
     return HMAP_SUCCESS;
 }
-
-int hmap_test(){
-    HMAP_DB *my_hmap_db;
-    TUPLE *my_tuple;
-    int ret = 0;
-    if( (ret = hmap_init(10, &my_hmap_db )) != HMAP_SUCCESS ){
-        return ret;
-    }
-
-    my_tuple = (my_hmap_db->tuple+2);
-    
-    sprintf(my_tuple->key, "key0");
-    my_tuple->key_len = 4;
-    my_tuple->index = 2;
-    
-    HDB_LIST_APPEND(my_hmap_db->list_tuple, my_tuple);
-    my_tuple->hash_next = my_tuple->hash_prev = my_tuple;
-    
-    
-    
-    if( (ret = hmap_add(&my_hmap_db, "mykey", 5, "hello", 5, 1)) < 0 ){
-        return ret;
-    }
-    
-    DEUBUG("===== PRINT AFTER ADD =====\n");
-    hmap_print(my_hmap_db);
-    
-        
-    DEUBUG("===== PRINT LIST DB =====\n");
-    hmap_print_list_tuple(my_hmap_db);
-    
-    DEUBUG("===== Checking mykey =====\n");
-    if( (ret = hmap_is_locate(my_hmap_db, "mykey", 5)) != HMAP_SUCCESS ){
-        return ret;
-    }
-    
-    DEUBUG("===== delete mykey =====\n");
-    if( (ret = hmap_delete(&my_hmap_db, "mykey", 5)) != HMAP_SUCCESS ){
-        return ret;
-    }
-    
-    DEUBUG("===== PRINT AFTER DELETE =====\n");
-    hmap_print(my_hmap_db);
-    
-    if( (ret = hmap_add(&my_hmap_db, "mykey2", 6, "hello2", 6, 1)) < 0 ){
-        return ret;
-    }
-    
-    DEUBUG("===== PRINT AFTER ADD =====\n");
-    hmap_print(my_hmap_db);
-    
-    
-    if( (ret = hmap_search(my_hmap_db, "mykey2", 6, &my_tuple)) < 0){
-        return ret;
-    }else{
-        
-        printf("Search key[%s] : data[%s]\n", my_tuple->key, (char *)my_tuple->data );
-        DEUBUG("===== PRINT AFTER MANUALLY delete =====\n");
-        my_tuple->key[0] = 0;
-        my_tuple->key_len = 0;
-        if(my_tuple->data != NULL){
-            free(my_tuple->data);
-        }
-        my_tuple->data = '\0';
-        my_tuple->data_len = 0;
-        
-        hmap_print(my_hmap_db);
-    }
-    
-    hmap_destroy(&my_hmap_db);
-    return 0;
-}
-
-int hmap_test_add100(){
-    HMAP_DB *my_hmap_db;
-    TUPLE *my_tuple;
-    int ret = 0;
-    int i = 0;
-    if( (ret = hmap_init(2048, &my_hmap_db )) != HMAP_SUCCESS ){
-        return ret;
-    }
-    char key[MAX_SIZE_KEY], data[1024];
-    int key_len = 0;
-    int data_len = 0;
-    for( i = 0; i < 40; i++ ){
-        key_len = sprintf(key, "key%d", i);
-        data_len = sprintf(data, "data%d", i);
-        if( (ret = hmap_add(&my_hmap_db, key, key_len, data, data_len, 1) < 0 ) ){
-            hmap_destroy(&my_hmap_db);
-            return ret;
-        }
-    }
-    hmap_print_list_tuple(my_hmap_db);
-    DEUBUG("SUMARY TUPLE : %d\n", my_hmap_db->tuple_count);
-    DEUBUG("SECONDARY TUPLE : %d\n", my_hmap_db->secondary_tuple_count);
-    hmap_destroy(&my_hmap_db);
-    return 0;
-}
-
-#ifdef ON_UNIT_TEST
-int main(){
-    int ret = 0;
-    printf("Test : %s[%d]\n",((ret = hmap_test()) != 0)?"fail":"true", ret);
-    getchar();
-    
-    printf("Test : %s[%d]\n",((ret = hmap_test_add100()) != 0)?"fail":"true", ret);
-    getchar();
-    
-    return 0;
-}
-#endif
