@@ -42,11 +42,12 @@ int main(){
     hmap_add(&my_hmap_db, "LastName", strlen("LastName"), 1, HMAP_DATA_TYPE_CHARS, "Mala", strlen("Mala"));
     hmap_add(&my_hmap_db, "Weight", strlen("Weight"), 1, HMAP_DATA_TYPE_DOUBLE, 62.239);
 
-
     /* display database */
     hmap_print_list(my_hmap_db);
 
     hmap_search(my_hmap_db, "FirstName", strlen("FirstName"), &ptr_tuple);
+    hmap_add(&my_hmap_db, "LinkName", strlen("LinkName"), 1, HMAP_DATA_TYPE_CUSTOM, ptr_tuple);
+
     printf("First Name is   : %s\n", ptr_tuple->vals.val_chars);
 
     hmap_search(my_hmap_db, "LastName", strlen("LastName"), &ptr_tuple);
@@ -57,6 +58,9 @@ int main(){
 
     hmap_search(my_hmap_db, "Weight", strlen("Weight"), &ptr_tuple);
     printf("Weight          : %f kgs\n", ptr_tuple->vals.val_double);
+
+    hmap_search(my_hmap_db, "LinkName", strlen("LinkName"), &ptr_tuple);
+    printf("First Name is   : %s\n", ((TUPLE*)ptr_tuple->vals.val_custom)->vals.val_chars);
 
     /* destroy database */
     hmap_destroy(&my_hmap_db);
