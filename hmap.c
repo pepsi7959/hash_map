@@ -389,6 +389,45 @@ int hmap_add_tuple_with_data(HMAP_DB **hmap_db, void *key, int k_len, int data_t
     return index;
 }
 
+int hmap_free_data(TUPLE *tuple){                                                     
+  switch( tuple->data_type ){                                                        
+      case HMAP_DATA_TYPE_INT:                                                        
+          DEBUG("remove[%d] data[%d]\n", tuple->index, tuple->vals.val_int);        
+          tuple->vals.val_int = 0;                                                   
+          break;                                                                      
+      case HMAP_DATA_TYPE_UINT:                                                       
+          DEBUG("remove[%d] data[%u]\n", tuple->index, tuple->vals.val_uint);       
+          tuple->vals.val_uint = 0;                                                  
+          break;                                                                      
+      case HMAP_DATA_TYPE_INT64:                                                      
+          DEBUG("remove[%d] data[%ld]\n", tuple->index, tuple->vals.val_int64);     
+          tuple->vals.val_int64 = 0;                                                 
+          break;                                                                      
+      case HMAP_DATA_TYPE_UNIT64:                                                     
+          DEBUG("remove[%d] data[%lu]\n", tuple->index, tuple->vals.val_uint64);    
+          tuple->vals.val_uint64 = 0;                                                
+          break;                                                                      
+      case HMAP_DATA_TYPE_DOUBLE:                                                     
+          DEBUG("remove[%d] data[%f]\n", tuple->index, tuple->vals.val_double);     
+          tuple->vals.val_double = 0.0;                                              
+          break;                                                                      
+      case HMAP_DATA_TYPE_CHARS:                                                      
+          DEBUG("remove[%d] data[%s]\n", tuple->index, (char *)tuple->vals.val_chars);
+          if( tuple->vals.val_chars != NULL ) {
+            free(tuple->vals.val_chars);
+          }          
+          tuple->vals.val_chars = NULL;                                             
+          break;                                                                      
+      case HMAP_DATA_TYPE_CUSTOM:                                                     
+          DEBUG("remove[%d] data[%p]\n", tuple->index, tuple->vals.val_custom);     
+          tuple->vals.val_custom = NULL;                                             
+          break;                                                                      
+      default :                                                                       
+        return HMAP_DATA_TYPE_INVALID;                                                
+  }                 
+    return HMAP_SUCCESS;                                                                  
+} 
+
 int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len){
 
     VALIDATE_DB(*hmap_db, key, k_len);
@@ -402,6 +441,9 @@ int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len){
         if(root_tuple == ptr_tuple){
             root_tuple->key[0] = 0;
             root_tuple->key_len = 0;
+            if( hmap_free_data(ptr_tuple) != HMAP_SUCCESS ){
+              DEBUG("Warnning: cannot free data\n");
+            }
             if( root_tuple->data != NULL){
                 free(root_tuple->data);
             }
@@ -409,6 +451,9 @@ int hmap_delete(HMAP_DB **hmap_db, void *key, int k_len){
             root_tuple->data_len = 0;
         }else{
             HDB_HASH_REMOVE(root_tuple, ptr_tuple);
+            if( hmap_free_data(ptr_tuple) != HMAP_SUCCESS ){
+              DEBUG("Warnning: cannot free data\n");
+            }
             if( ptr_tuple->data != NULL){
                 free(ptr_tuple->data);
             }
@@ -427,6 +472,9 @@ int hmap_truncate(HMAP_DB **hmap_db){
     TUPLE *ptr_list_tuple = (*hmap_db)->list_tuple;
     while( ptr_list_tuple ){
         HDB_LIST_REMOVE((*hmap_db)->list_tuple, ptr_list_tuple);
+            if( hmap_free_data(ptr_list_tuple) != HMAP_SUCCESS ){
+              DEBUG("Warnning: cannot free data\n");
+            }
         if( ptr_list_tuple->data ){
             free(ptr_list_tuple->data);
             ptr_list_tuple->data = NULL;
