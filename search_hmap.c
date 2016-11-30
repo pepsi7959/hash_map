@@ -4,8 +4,34 @@
 #include <sys/time.h>
 #include "hmap.h"
 
+int str_replace(char *orig, const char *find, const char *replace, char *new){
+    char *p  = NULL;
+    char *pp = NULL;
+    int size = 0;
+    int replace_length = strlen(find);
+    char buff[1024];
+   
+    pp = p = orig;
+    
+    p = strstr(p, find);
 
-int revese_search( char *find , HMAP_DB *db, char *value){
+    while(p != NULL){
+        int token_len = p - pp;
+        memcpy(buff, pp, token_len);
+        buff[token_len] = 0;
+        printf("str_replace token : %s\n", buff);
+        size += sprintf(&new[size],"%s%s", buff, replace);
+        pp = p = ( p+replace_length);
+        p = strstr(p, find);
+    }
+
+    sprintf(&new[size], "%s", pp);
+    printf("new : %s\n", new);
+    return 0;
+}
+
+
+int reverse_search( char *find , HMAP_DB *db, char *value){
     char *p = NULL;
     int ret = 0;
     TUPLE *ptr_tuple = NULL;
@@ -42,12 +68,17 @@ int main(){
 
 
     data[0] = 0;
-    revese_search("ds=ds3,user=toro,msisdn=#1,dc=MSISDN,dc=C-NTDB", my_hmap_db, data);
+    reverse_search("ds=ds3,user=toro,msisdn=#1,dc=MSISDN,dc=C-NTDB", my_hmap_db, data);
     printf("data : %s\n", data);
 
     data[0] = 0;
-    revese_search("user=toro,imsi=#1,dc=IMSI,dc=C-NTDB", my_hmap_db, data);
+    reverse_search("user=toro,imsi=#1,dc=IMSI,dc=C-NTDB", my_hmap_db, data);
     printf("data : %s\n", data);
+
+
+    /* Replace data */
+    str_replace("#1user=toro,imsi=#1,#1,#1,#1,#1,dc=IMS#1I,dc=C-NTDB#1","#1","660817264466", data);
+
     /* destroy database */
     hmap_destroy(&my_hmap_db);
     
